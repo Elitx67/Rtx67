@@ -1,10 +1,5 @@
 --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
---[[
-    RTX ULTRA V9 · Cinematic shader suite for Roblox (Delta / mobile-first)
-    Rewrite of V8: smooth weather system, procedural skies, color-grade styles,
-    lightning, snow, dust, dynamic FOV, saved profiles, new animated mobile UI.
+    RTX ULTRA V9.1 EXTREME · Maximum Processor Stress & Fidelity Suite (Delta / Mobile)
 ]]
 
 -- ─── ANTI-DUPLICATE GUARD ──────────────────────────────────────────────────
@@ -32,27 +27,27 @@ local Terrain = Workspace:FindFirstChildOfClass("Terrain")
 local IS_TOUCH = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 
 -- ══════════════════════════════════════════════════════════════════════════
---  CONFIG
+--  CONFIG (EXTREME PROFILE)
 -- ══════════════════════════════════════════════════════════════════════════
-local VERSION = "9.0"
+local VERSION = "9.1-EXTREME"
 local CFG = {
-    SHADOW_SOFTNESS    = 0.08,
-    LIGHT_SHADOW_DIST  = 500,
-    LIGHT_REFRESH      = 0.25,
-    NEON_SCAN_DIST     = 150,
-    NEON_SCAN_INTERVAL = 0.5,
-    NEON_MAX_SAMPLES   = 100,
-    FOCUS_MAX          = 350,
-    FOCUS_SPEED        = 8.5,
-    SUN_BLOOM_EXTRA    = 1.45,
-    SUN_GLARE_EXTRA    = 0.85,
-    SUN_RAYS_EXTRA     = 0.65,
-    SUN_DISK_BLOOM     = 1.30,
-    SUN_DISK_RAYS      = 0.75,
-    INDOOR_EXPOSURE    = 0.45,
-    FPS_LOW            = 24,
-    FPS_HIGH           = 55,
-    SAVE_FILE          = "RTXV9_Settings.json",
+    SHADOW_SOFTNESS    = 0.02,
+    LIGHT_SHADOW_DIST  = 2500,
+    LIGHT_REFRESH      = 0.05,
+    NEON_SCAN_DIST     = 500,
+    NEON_SCAN_INTERVAL = 0.1,
+    NEON_MAX_SAMPLES   = 300,
+    FOCUS_MAX          = 800,
+    FOCUS_SPEED        = 12.0,
+    SUN_BLOOM_EXTRA    = 3.50,
+    SUN_GLARE_EXTRA    = 1.80,
+    SUN_RAYS_EXTRA     = 1.50,
+    SUN_DISK_BLOOM     = 2.50,
+    SUN_DISK_RAYS      = 1.80,
+    INDOOR_EXPOSURE    = 0.60,
+    FPS_LOW            = 15,
+    FPS_HIGH           = 40,
+    SAVE_FILE          = "RTXV9_Extreme_Settings.json",
     TOGGLE_KEY         = Enum.KeyCode.RightShift,
     MASTER_KEY         = Enum.KeyCode.RightControl,
 }
@@ -65,10 +60,10 @@ local function clamp(x, a, b) return math.max(a, math.min(b, x)) end
 local function lerp(a, b, t) return a + (b - a) * t end
 local function smoothstep(a, b, x) local t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t) end
 local function damp(cur, target, speed, dt) return lerp(cur, target, 1 - math.exp(-speed * dt)) end
-local function setN(o, p, v) if math.abs(o[p] - v) > 0.0015 then o[p] = v end end
+local function setN(o, p, v) if math.abs(o[p] - v) > 0.0005 then o[p] = v end end
 local function setC(o, p, v)
     local c = o[p]
-    if math.abs(c.R - v.R) + math.abs(c.G - v.G) + math.abs(c.B - v.B) > 0.002 then o[p] = v end
+    if math.abs(c.R - v.R) + math.abs(c.G - v.G) + math.abs(c.B - v.B) > 0.001 then o[p] = v end
 end
 local function lerpC3(a, b, t) return Color3.new(lerp(a.R, b.R, t), lerp(a.G, b.G, t), lerp(a.B, b.B, t)) end
 
@@ -90,31 +85,31 @@ local function guiParent()
 end
 
 -- ══════════════════════════════════════════════════════════════════════════
---  SETTINGS, DEFAULTS, PERSISTENCE
+--  SETTINGS, DEFAULTS, EXTREME MULTIPLIERS
 -- ══════════════════════════════════════════════════════════════════════════
-local QM           = { Off = 0, Low = 0.30, Medium = 0.60, High = 1.00, Ultra = 1.35 }
-local SHADOW_COUNT = { Off = 0, Low = 15, Medium = 35, High = 60, Ultra = 90 }
-local FOG_END      = { Off = 99999, Low = 1500, Medium = 1100, High = 850, Ultra = 600 }
-local REFLECT_MULT = { Off = 0, Low = 0.30, Medium = 0.60, High = 0.85, Ultra = 1.00 }
-local WATER_MULT   = { Off = 0.20, Low = 0.50, Medium = 0.75, High = 0.90, Ultra = 1.00 }
+local QM           = { Off = 0, Low = 0.60, Medium = 1.20, High = 2.00, Ultra = 3.50 }
+local SHADOW_COUNT = { Off = 0, Low = 50, Medium = 120, High = 250, Ultra = 500 }
+local FOG_END      = { Off = 99999, Low = 3000, Medium = 2000, High = 1200, Ultra = 800 }
+local REFLECT_MULT = { Off = 0, Low = 0.80, Medium = 1.40, High = 2.00, Ultra = 3.00 }
+local WATER_MULT   = { Off = 0.50, Low = 1.00, Medium = 1.50, High = 2.00, Ultra = 3.00 }
 local GFX = {
-    Low    = { Enum.QualityLevel.Level05, Enum.MeshPartDetailLevel.Level02 },
-    Medium = { Enum.QualityLevel.Level10, Enum.MeshPartDetailLevel.Level03 },
-    High   = { Enum.QualityLevel.Level15, Enum.MeshPartDetailLevel.Level04 },
+    Low    = { Enum.QualityLevel.Level10, Enum.MeshPartDetailLevel.Level03 },
+    Medium = { Enum.QualityLevel.Level15, Enum.MeshPartDetailLevel.Level04 },
+    High   = { Enum.QualityLevel.Level21, Enum.MeshPartDetailLevel.Level04 },
     Ultra  = { Enum.QualityLevel.Level21, Enum.MeshPartDetailLevel.Level04 },
 }
 
 local DEFAULTS = {
-    gfx = "High",
-    sunrays = "High", shadows = "High", reflections = "Ultra",
-    bloom = "High", ssao = "High", dof = "Medium", neon = "High",
-    motionblur = "Low", vignette = "Medium", dust = true, bars = false,
-    grade = "Natural", colorgrade = "High", contrast = "High", clarity = "Medium",
-    exposure = 0, warmth = 0.1,
-    fog = "High", clouds = "High", water = "Ultra", skyStyle = "Default",
+    gfx = "Ultra",
+    sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra",
+    bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
+    motionblur = "Medium", vignette = "High", dust = true, bars = false,
+    grade = "Cinematic", colorgrade = "Ultra", contrast = "Ultra", clarity = "Ultra",
+    exposure = 0.05, warmth = 0.15,
+    fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Moonlit",
     weather = "Clear", lightning = true,
     lockTime = false, clockTime = 14, timeSpeed = 0,
-    customFov = false, fov = 70, dynFov = false, adaptive = true,
+    customFov = false, fov = 70, dynFov = false, adaptive = false,
 }
 local Settings = {}
 for k, v in pairs(DEFAULTS) do Settings[k] = v end
@@ -181,7 +176,7 @@ sweepOld(Lighting); sweepOld(Workspace); sweepOld(Terrain)
 pcall(function() sweepOld(guiParent()) end)
 
 -- ══════════════════════════════════════════════════════════════════════════
---  EFFECT INSTANCES
+--  EFFECT INSTANCES (MAXIMUM INTENSITY)
 -- ══════════════════════════════════════════════════════════════════════════
 local function make(class, name)
     local i = Instance.new(class); i.Name = name; i.Parent = Lighting; track(i); return i
@@ -193,15 +188,13 @@ local dof     = make("DepthOfFieldEffect",    "RTXV9_DoF")
 local sunRays = make("SunRaysEffect",         "RTXV9_SunRays")
 local blur    = make("BlurEffect",            "RTXV9_Blur")
 local myFx    = { bloom, cc, dof, sunRays, blur }
-blur.Size = 0; bloom.Size = 48; bloom.Threshold = 0.92; sunRays.Spread = 0.70
+blur.Size = 0; bloom.Size = 64; bloom.Threshold = 0.80; sunRays.Spread = 0.90
 
--- Sky (stars / sun & moon size only; no external asset IDs needed)
 local sky = Lighting:FindFirstChildOfClass("Sky")
 local ownSky = false
 if not sky then sky = track(new("Sky", { Name = "RTXV9_Sky", Parent = Lighting })); ownSky = true end
 local origSky = { StarCount = sky.StarCount, SunAngularSize = sky.SunAngularSize, MoonAngularSize = sky.MoonAngularSize }
 
--- Clouds
 local clouds, cloudsOrig
 if Terrain then
     clouds = Terrain:FindFirstChildOfClass("Clouds")
@@ -209,35 +202,34 @@ if Terrain then
     else clouds = track(new("Clouds", { Name = "RTXV9_Clouds" }, Terrain)) end
 end
 
--- Particle volumes that follow the camera
 local function fxPart(name, size)
     return track(new("Part", { Name = name, Size = size, Transparency = 1, CanCollide = false, CanQuery = false,
         CanTouch = false, CastShadow = false, Anchored = true, Massless = true, Locked = true, Parent = Workspace }))
 end
-local rainPart = fxPart("RTXV9_Rain", V3(90, 1, 90))
+local rainPart = fxPart("RTXV9_Rain", V3(150, 1, 150))
 local rainEm = new("ParticleEmitter", {
-    Rate = 0, Enabled = false, Lifetime = NumberRange.new(0.55, 0.75), Speed = NumberRange.new(110, 140),
-    EmissionDirection = Enum.NormalId.Bottom, SpreadAngle = Vector2.new(2, 2),
-    Orientation = Enum.ParticleOrientation.VelocityParallel, Size = NumberSequence.new(0.16),
-    Transparency = NumberSequence.new(0.55), LightInfluence = 0.4, Color = ColorSequence.new(C3(190, 210, 235)),
+    Rate = 0, Enabled = false, Lifetime = NumberRange.new(0.55, 0.75), Speed = NumberRange.new(130, 160),
+    EmissionDirection = Enum.NormalId.Bottom, SpreadAngle = Vector2.new(4, 4),
+    Orientation = Enum.ParticleOrientation.VelocityParallel, Size = NumberSequence.new(0.20),
+    Transparency = NumberSequence.new(0.40), LightInfluence = 0.2, Color = ColorSequence.new(C3(210, 230, 255)),
 }, rainPart)
-pcall(function() rainEm.Squash = NumberSequence.new(-1.5) end)
+pcall(function() rainEm.Squash = NumberSequence.new(-2.0) end)
 
-local snowPart = fxPart("RTXV9_Snow", V3(90, 1, 90))
+local snowPart = fxPart("RTXV9_Snow", V3(150, 1, 150))
 local snowEm = new("ParticleEmitter", {
-    Rate = 0, Enabled = false, Lifetime = NumberRange.new(5, 7), Speed = NumberRange.new(5, 9),
-    EmissionDirection = Enum.NormalId.Bottom, SpreadAngle = Vector2.new(15, 15),
-    Size = NumberSequence.new(0.22), Transparency = NumberSequence.new(0.15), LightInfluence = 0.8,
-    RotSpeed = NumberRange.new(-60, 60), Rotation = NumberRange.new(0, 360), Color = ColorSequence.new(C3(255, 255, 255)),
+    Rate = 0, Enabled = false, Lifetime = NumberRange.new(5, 7), Speed = NumberRange.new(6, 12),
+    EmissionDirection = Enum.NormalId.Bottom, SpreadAngle = Vector2.new(20, 20),
+    Size = NumberSequence.new(0.28), Transparency = NumberSequence.new(0.10), LightInfluence = 0.9,
+    RotSpeed = NumberRange.new(-80, 80), Rotation = NumberRange.new(0, 360), Color = ColorSequence.new(C3(255, 255, 255)),
 }, snowPart)
 
-local dustPart = fxPart("RTXV9_Dust", V3(70, 30, 70))
+local dustPart = fxPart("RTXV9_Dust", V3(120, 50, 120))
 local dustEm = new("ParticleEmitter", {
-    Rate = 0, Enabled = false, Lifetime = NumberRange.new(6, 10), Speed = NumberRange.new(0.2, 0.6),
-    SpreadAngle = Vector2.new(180, 180), Size = NumberSequence.new(0.07), LightEmission = 0.3, LightInfluence = 1,
-    Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.2, 0.55),
-        NumberSequenceKeypoint.new(0.8, 0.55), NumberSequenceKeypoint.new(1, 1) }),
-    Acceleration = V3(0.25, 0.05, 0.1), Color = ColorSequence.new(C3(255, 240, 215)),
+    Rate = 0, Enabled = false, Lifetime = NumberRange.new(6, 10), Speed = NumberRange.new(0.3, 0.8),
+    SpreadAngle = Vector2.new(180, 180), Size = NumberSequence.new(0.10), LightEmission = 0.6, LightInfluence = 1,
+    Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 1), NumberSequenceKeypoint.new(0.2, 0.35),
+        NumberSequenceKeypoint.new(0.8, 0.35), NumberSequenceKeypoint.new(1, 1) }),
+    Acceleration = V3(0.4, 0.1, 0.2), Color = ColorSequence.new(C3(255, 245, 225)),
 }, dustPart)
 pcall(function() dustEm.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume end)
 
@@ -259,31 +251,31 @@ end
 connect(Lighting.ChildAdded, function(o) task.defer(function() if running and o.Parent == Lighting then neutralize(o) end end) end)
 
 -- ══════════════════════════════════════════════════════════════════════════
---  PALETTES (Day / Golden hour / Night / Overcast) + WEATHER + SKY + GRADES
+--  EXTREME PALETTES & GRADES
 -- ══════════════════════════════════════════════════════════════════════════
 local P = {
-    Brightness  = { 3.8, 2.9, 1.1, 2.0 },
-    Exposure    = { -0.05, 0.15, 0.45, -0.10 },
-    Ambient     = { C3(62, 72, 88), C3(115, 80, 60), C3(16, 20, 38), C3(45, 55, 70) },
-    Outdoor     = { C3(118, 134, 158), C3(175, 125, 86), C3(30, 38, 74), C3(100, 110, 130) },
-    ShiftTop    = { C3(255, 248, 228), C3(255, 170, 92), C3(112, 132, 214), C3(200, 210, 230) },
-    ShiftBottom = { C3(148, 168, 188), C3(118, 86, 66), C3(18, 24, 50), C3(120, 130, 150) },
-    AtmoDensity = { 0.32, 0.44, 0.26, 0.48 },
-    AtmoOffset  = { 0.25, 0.34, 0.08, 0.30 },
-    AtmoColor   = { C3(180, 204, 228), C3(245, 158, 86), C3(20, 30, 64), C3(140, 150, 170) },
-    AtmoDecay   = { C3(108, 114, 128), C3(158, 96, 60), C3(14, 18, 42), C3(80, 85, 95) },
-    AtmoGlare   = { 0.16, 0.60, 0.0, 0.05 },
-    AtmoHaze    = { 1.2, 3.0, 0.4, 2.5 },
-    Sat         = { 0.26, 0.34, 0.14, 0.12 },
-    Contrast    = { 0.18, 0.24, 0.24, 0.20 },
-    Tint        = { C3(255, 252, 244), C3(255, 222, 178), C3(184, 200, 255), C3(210, 220, 235) },
-    Brightness2 = { 0.01, 0.03, -0.02, -0.01 },
-    BloomI      = { 0.65, 1.25, 1.55, 0.45 },
-    BloomT      = { 0.90, 0.78, 0.68, 0.95 },
-    RaysI       = { 0.15, 0.38, 0.0, 0.0 },
-    CloudColor  = { C3(255, 255, 255), C3(255, 178, 124), C3(42, 52, 90), C3(110, 118, 130) },
-    FogColor    = { C3(195, 214, 234), C3(245, 184, 142), C3(8, 14, 34), C3(150, 160, 175) },
-    FogDist     = { 900, 660, 420, 700 },
+    Brightness  = { 4.2, 3.2, 1.4, 2.4 },
+    Exposure    = { 0.00, 0.20, 0.50, -0.05 },
+    Ambient     = { C3(50, 60, 78), C3(100, 70, 50), C3(10, 14, 30), C3(35, 45, 60) },
+    Outdoor     = { C3(130, 150, 180), C3(190, 135, 90), C3(25, 32, 65), C3(110, 120, 145) },
+    ShiftTop    = { C3(255, 250, 235), C3(255, 160, 80), C3(90, 115, 220), C3(210, 220, 240) },
+    ShiftBottom = { C3(135, 155, 175), C3(105, 75, 55), C3(12, 18, 40), C3(105, 115, 135) },
+    AtmoDensity = { 0.45, 0.58, 0.35, 0.62 },
+    AtmoOffset  = { 0.30, 0.40, 0.12, 0.35 },
+    AtmoColor   = { C3(160, 190, 220), C3(255, 140, 70), C3(15, 25, 60), C3(120, 135, 155) },
+    AtmoDecay   = { C3(90, 100, 115), C3(140, 80, 50), C3(10, 14, 35), C3(70, 75, 85) },
+    AtmoGlare   = { 0.35, 0.85, 0.05, 0.15 },
+    AtmoHaze    = { 2.0, 4.5, 0.8, 3.8 },
+    Sat         = { 0.38, 0.45, 0.22, 0.20 },
+    Contrast    = { 0.30, 0.38, 0.35, 0.32 },
+    Tint        = { C3(255, 252, 244), C3(255, 215, 165), C3(170, 190, 255), C3(200, 215, 235) },
+    Brightness2 = { 0.02, 0.05, -0.01, 0.00 },
+    BloomI      = { 1.20, 2.20, 2.80, 0.90 },
+    BloomT      = { 0.82, 0.72, 0.62, 0.88 },
+    RaysI       = { 0.35, 0.75, 0.05, 0.05 },
+    CloudColor  = { C3(255, 255, 255), C3(255, 165, 110), C3(30, 40, 80), C3(95, 105, 120) },
+    FogColor    = { C3(180, 205, 230), C3(240, 170, 130), C3(6, 10, 28), C3(135, 145, 160) },
+    FogDist     = { 700, 500, 320, 550 },
 }
 local W = { d = 1, g = 0, n = 0, r = 0 }
 local function bn(t) return t[1] * W.d + t[2] * W.g + t[3] * W.n + t[4] * W.r end
@@ -295,29 +287,29 @@ end
 
 local WEATHER = {
     Clear  = { rain = 0, snow = 0, fog = 0.0, cover = 0.00, dark = 0.00, storm = 0 },
-    Cloudy = { rain = 0, snow = 0, fog = 0.15, cover = 0.35, dark = 0.35, storm = 0 },
-    Rain   = { rain = 1, snow = 0, fog = 0.45, cover = 0.55, dark = 0.55, storm = 0 },
-    Storm  = { rain = 1.6, snow = 0, fog = 0.60, cover = 0.65, dark = 0.80, storm = 1 },
-    Snow   = { rain = 0, snow = 1, fog = 0.40, cover = 0.50, dark = 0.45, storm = 0 },
-    Fog    = { rain = 0, snow = 0, fog = 1.0, cover = 0.30, dark = 0.30, storm = 0 },
+    Cloudy = { rain = 0, snow = 0, fog = 0.20, cover = 0.45, dark = 0.40, storm = 0 },
+    Rain   = { rain = 1.5, snow = 0, fog = 0.60, cover = 0.70, dark = 0.65, storm = 0 },
+    Storm  = { rain = 2.2, snow = 0, fog = 0.80, cover = 0.85, dark = 0.90, storm = 1 },
+    Snow   = { rain = 0, snow = 1.5, fog = 0.55, cover = 0.65, dark = 0.55, storm = 0 },
+    Fog    = { rain = 0, snow = 0, fog = 1.3, cover = 0.45, dark = 0.40, storm = 0 },
 }
 local wx = { rain = 0, snow = 0, fog = 0, cover = 0, dark = 0, storm = 0 }
 
 local SKY = {
     Default = { amt = 0 },
-    Golden  = { amt = 0.70, atmo = C3(255, 190, 120), decay = C3(190, 110, 60), top = C3(255, 200, 140), cloud = C3(255, 190, 130), fog = C3(245, 190, 140), stars = 0 },
-    Dusk    = { amt = 0.80, atmo = C3(190, 130, 200), decay = C3(110, 60, 120), top = C3(230, 150, 200), cloud = C3(240, 150, 190), fog = C3(180, 120, 170), stars = 1500 },
-    Moonlit = { amt = 0.85, atmo = C3(70, 100, 170), decay = C3(30, 50, 100), top = C3(150, 175, 255), cloud = C3(70, 90, 140), fog = C3(40, 60, 110), stars = 6000 },
-    Neon    = { amt = 0.80, atmo = C3(120, 60, 220), decay = C3(30, 200, 255), top = C3(255, 120, 230), cloud = C3(255, 90, 210), fog = C3(90, 50, 180), stars = 3000 },
+    Golden  = { amt = 0.85, atmo = C3(255, 175, 90), decay = C3(170, 90, 45), top = C3(255, 185, 120), cloud = C3(255, 175, 110), fog = C3(240, 175, 120), stars = 500 },
+    Dusk    = { amt = 0.90, atmo = C3(175, 110, 210), decay = C3(95, 45, 110), top = C3(220, 130, 190), cloud = C3(230, 130, 180), fog = C3(165, 105, 155), stars = 2500 },
+    Moonlit = { amt = 0.95, atmo = C3(55, 85, 180), decay = C3(20, 35, 90), top = C3(135, 160, 255), cloud = C3(55, 75, 130), fog = C3(30, 48, 100), stars = 8000 },
+    Neon    = { amt = 0.90, atmo = C3(140, 40, 240), decay = C3(20, 215, 255), top = C3(255, 100, 240), cloud = C3(255, 75, 220), fog = C3(80, 40, 190), stars = 5000 },
 }
 local GRADES = {
-    Natural   = { sat = 0.00, con = 0.00, bri = 0.00, tint = C3(255, 255, 255), amt = 0 },
-    Cinematic = { sat = -0.05, con = 0.10, bri = -0.01, tint = C3(255, 226, 196), amt = 0.25 },
-    Vivid     = { sat = 0.22, con = 0.08, bri = 0.01, tint = C3(255, 250, 240), amt = 0.10 },
-    Noir      = { sat = -1.30, con = 0.30, bri = -0.02, tint = C3(235, 238, 255), amt = 0.15 },
-    Teal      = { sat = 0.06, con = 0.12, bri = 0, tint = C3(180, 232, 242), amt = 0.30 },
-    Vintage   = { sat = -0.12, con = 0.06, bri = 0.02, tint = C3(255, 232, 190), amt = 0.35 },
-    Cold      = { sat = -0.04, con = 0.08, bri = 0, tint = C3(190, 215, 255), amt = 0.35 },
+    Natural   = { sat = 0.10, con = 0.10, bri = 0.01, tint = C3(255, 255, 255), amt = 0.1 },
+    Cinematic = { sat = 0.05, con = 0.22, bri = 0.00, tint = C3(255, 220, 185), amt = 0.45 },
+    Vivid     = { sat = 0.35, con = 0.20, bri = 0.03, tint = C3(255, 245, 230), amt = 0.25 },
+    Noir      = { sat = -1.40, con = 0.45, bri = -0.04, tint = C3(220, 230, 255), amt = 0.25 },
+    Teal      = { sat = 0.18, con = 0.25, bri = 0.01, tint = C3(165, 225, 245), amt = 0.50 },
+    Vintage   = { sat = -0.05, con = 0.18, bri = 0.03, tint = C3(255, 220, 170), amt = 0.50 },
+    Cold      = { sat = 0.05, con = 0.20, bri = 0.00, tint = C3(175, 205, 255), amt = 0.50 },
 }
 
 -- ══════════════════════════════════════════════════════════════════════════
@@ -327,16 +319,16 @@ local S = {
     indoor = 0, indoorT = 0, sunF = 0, sunFT = 0, sunDisk = 0, sunDiskT = 0,
     focus = 60, focusT = 60, water = 0, waterT = 0, ssao = 0, ssaoT = 0, mblur = 0,
     neonR = 0, neonG = 0, neonB = 0, neonRT = 0, neonGT = 0, neonBT = 0,
-    fps = 60, shadowLimit = SHADOW_COUNT[Settings.shadows] or 48, dofOn = Settings.dof ~= "Off",
+    fps = 60, shadowLimit = SHADOW_COUNT[Settings.shadows] or 250, dofOn = Settings.dof ~= "Off",
     speed = 0, flash = 0,
 }
 local ctl = {}
 local cycleTime = Lighting.ClockTime
-local nextBolt = os.clock() + 8
+local nextBolt = os.clock() + 6
 local fovActive = false
 
 -- ══════════════════════════════════════════════════════════════════════════
---  SCREEN OVERLAY (vignette + cinematic bars)
+--  SCREEN OVERLAY
 -- ══════════════════════════════════════════════════════════════════════════
 local function tween(obj, props, time, style, dir)
     local tw = TweenService:Create(obj, TweenInfo.new(time or 0.2, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out), props)
@@ -348,24 +340,24 @@ pcall(function() overlayGui.Parent = guiParent() end)
 
 local vignette = {}
 for _, d in ipairs({
-    { Vector2.new(0, 0), UDim2.new(0, 0, 0, 0), UDim2.new(1, 0, 0.28, 0), 90 },
-    { Vector2.new(0, 1), UDim2.new(0, 0, 1, 0), UDim2.new(1, 0, 0.28, 0), 270 },
-    { Vector2.new(0, 0), UDim2.new(0, 0, 0, 0), UDim2.new(0.20, 0, 1, 0), 0 },
-    { Vector2.new(1, 0), UDim2.new(1, 0, 0, 0), UDim2.new(0.20, 0, 1, 0), 180 },
+    { Vector2.new(0, 0), UDim2.new(0, 0, 0, 0), UDim2.new(1, 0, 0.32, 0), 90 },
+    { Vector2.new(0, 1), UDim2.new(0, 0, 1, 0), UDim2.new(1, 0, 0.32, 0), 270 },
+    { Vector2.new(0, 0), UDim2.new(0, 0, 0, 0), UDim2.new(0.24, 0, 1, 0), 0 },
+    { Vector2.new(1, 0), UDim2.new(1, 0, 0, 0), UDim2.new(0.24, 0, 1, 0), 180 },
 }) do
     local f = new("Frame", { AnchorPoint = d[1], Position = d[2], Size = d[3], BackgroundColor3 = C3(0, 0, 0), BackgroundTransparency = 1, BorderSizePixel = 0, Active = false }, overlayGui)
-    new("UIGradient", { Rotation = d[4], Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.5, 0.65), NumberSequenceKeypoint.new(1, 1) }) }, f)
+    new("UIGradient", { Rotation = d[4], Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0), NumberSequenceKeypoint.new(0.4, 0.55), NumberSequenceKeypoint.new(1, 1) }) }, f)
     vignette[#vignette + 1] = f
 end
 local barTop = new("Frame", { Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = C3(0, 0, 0), BorderSizePixel = 0, ZIndex = 5 }, overlayGui)
 local barBottom = new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 0), BackgroundColor3 = C3(0, 0, 0), BorderSizePixel = 0, ZIndex = 5 }, overlayGui)
 local function updateBars()
-    local h = (Settings.bars and state.enabled) and 0.11 or 0
+    local h = (Settings.bars and state.enabled) and 0.12 or 0
     tween(barTop, { Size = UDim2.new(1, 0, h, 0) }, 0.6, Enum.EasingStyle.Quint)
     tween(barBottom, { Size = UDim2.new(1, 0, h, 0) }, 0.6, Enum.EasingStyle.Quint)
 end
 local function setVignette(i)
-    local t = 1 - clamp(i, 0, 0.85)
+    local t = 1 - clamp(i, 0, 0.95)
     for _, f in ipairs(vignette) do if math.abs(f.BackgroundTransparency - t) > 0.004 then f.BackgroundTransparency = t end end
 end
 
@@ -407,14 +399,14 @@ local function scanNeonBleed()
         if part.Parent then
             local d = (part.Position - pos).Magnitude
             if d < maxD then
-                local w = clamp((1 - d / maxD) * part.Size.Magnitude * 0.12, 0, 0.6)
+                local w = clamp((1 - d / maxD) * part.Size.Magnitude * 0.18, 0, 0.9)
                 local col = part.Color
                 nr += col.R * w; ng += col.G * w; nb += col.B * w; count += 1
                 if count >= CFG.NEON_MAX_SAMPLES then break end
             end
         else neonParts[part] = nil end
     end
-    local mag, maxInf = math.max(nr, ng, nb), 0.28 * qual("neon")
+    local mag, maxInf = math.max(nr, ng, nb), 0.45 * qual("neon")
     if mag > 0.001 then
         local f = maxInf / math.max(mag, maxInf)
         S.neonRT, S.neonGT, S.neonBT = nr * f, ng * f, nb * f
@@ -428,17 +420,17 @@ local function sampleWorld(doWater)
     local sunDir = Lighting:GetSunDirection()
     local hit = Workspace:Raycast(pos, look * CFG.FOCUS_MAX, rayMain)
     S.focusT = hit and clamp(hit.Distance, 3, CFG.FOCUS_MAX) or CFG.FOCUS_MAX
-    S.indoorT = Workspace:Raycast(pos, V3(0, 80, 0), rayMain) and 1 or 0
+    S.indoorT = Workspace:Raycast(pos, V3(0, 100, 0), rayMain) and 1 or 0
     if Settings.ssao ~= "Off" then
-        local dh = Workspace:Raycast(pos, V3(0, -3, 0), rayMain)
-        S.ssaoT = (dh and (1 - clamp(dh.Distance / 3, 0, 1)) or 0) * 0.28 * qual("ssao")
+        local dh = Workspace:Raycast(pos, V3(0, -4, 0), rayMain)
+        S.ssaoT = (dh and (1 - clamp(dh.Distance / 4, 0, 1)) or 0) * 0.45 * qual("ssao")
     else S.ssaoT = 0 end
     local sunUp = smoothstep(-0.02, 0.15, sunDir.Y)
     local dot = look:Dot(sunDir)
-    local facing = clamp((dot - 0.55) / 0.45, 0, 1) ^ 2
-    local visible = Workspace:Raycast(pos, sunDir * 500, rayMain) and 0 or 1
+    local facing = clamp((dot - 0.50) / 0.50, 0, 1) ^ 2
+    local visible = Workspace:Raycast(pos, sunDir * 800, rayMain) and 0 or 1
     S.sunFT = facing * sunUp * visible
-    S.sunDiskT = clamp((dot - 0.96) / 0.04, 0, 1) * sunUp * visible
+    S.sunDiskT = clamp((dot - 0.94) / 0.06, 0, 1) * sunUp * visible
     if doWater then S.waterT = isUnderwater(pos) and 1 or 0 end
     local hrp = LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
     if hrp then local v = hrp.AssemblyLinearVelocity; S.speedT = Vector3.new(v.X, 0, v.Z).Magnitude else S.speedT = 0 end
@@ -451,18 +443,18 @@ local function motionBlurTarget(dt)
     local look, target = cam.CFrame.LookVector, 0
     if prevLook then
         local vel = math.acos(clamp(prevLook:Dot(look), -1, 1)) / math.max(dt, 1e-3)
-        target = clamp((vel - 0.9) * 2.2, 0, 16) * qual("motionblur")
+        target = clamp((vel - 0.8) * 2.8, 0, 22) * qual("motionblur")
     end
     prevLook = look; return target
 end
 
 -- ══════════════════════════════════════════════════════════════════════════
---  DYNAMIC LIGHT SHADOW BUDGET
+--  DYNAMIC LIGHT SHADOW BUDGET (EXTREME)
 -- ══════════════════════════════════════════════════════════════════════════
 local function trackLight(o) if o:IsA("Light") then lights[o] = true; if origShadows[o] == nil then origShadows[o] = o.Shadows end end end
 local function lightPriority(l)
-    local base = l:IsA("SpotLight") and 1.0 or (l:IsA("SurfaceLight") and 0.85 or 0.65)
-    return base * (0.6 + clamp(l.Brightness, 0, 3) * 0.4)
+    local base = l:IsA("SpotLight") and 1.2 or (l:IsA("SurfaceLight") and 1.0 or 0.8)
+    return base * (0.5 + clamp(l.Brightness, 0, 5) * 0.5)
 end
 local lightArr = {}
 local function updateLights()
@@ -489,7 +481,7 @@ task.spawn(function()
     for _, o in ipairs(Workspace:GetDescendants()) do
         if not running then return end
         trackLight(o); trackNeon(o); n += 1
-        if n % 1500 == 0 then task.wait() end
+        if n % 1000 == 0 then task.wait() end
     end
 end)
 connect(Workspace.DescendantAdded, function(o) trackLight(o); trackNeon(o) end)
@@ -501,28 +493,28 @@ connect(Workspace.DescendantRemoving, function(o) lights[o] = nil; neonParts[o] 
 local function applyDiscrete()
     if not state.enabled then return end
     if Terrain then
-        local wm = WATER_MULT[Settings.water] or 1
+        local wm = (WATER_MULT[Settings.water] or 1) * 1.5
         pcall(function()
-            Terrain.WaterReflectance = wm; Terrain.WaterTransparency = 1 - wm * 0.80
-            Terrain.WaterWaveSize = 0.35 * wm; Terrain.WaterWaveSpeed = 18 * wm
-            Terrain.WaterColor = C3(20, 150, 200)
+            Terrain.WaterReflectance = wm; Terrain.WaterTransparency = 1 - wm * 0.45
+            Terrain.WaterWaveSize = 0.50 * wm; Terrain.WaterWaveSpeed = 24 * wm
+            Terrain.WaterColor = C3(10, 125, 175)
         end)
     end
     if clouds then clouds.Enabled = Settings.clouds ~= "Off" end
     local sk = SKY[Settings.skyStyle] or SKY.Default
     pcall(function()
-        sky.StarCount = (sk.stars and sk.stars > 0) and sk.stars or origSky.StarCount
-        sky.SunAngularSize = Settings.skyStyle == "Golden" and 24 or origSky.SunAngularSize
-        sky.MoonAngularSize = Settings.skyStyle == "Moonlit" and 18 or origSky.MoonAngularSize
+        sky.StarCount = (sk.stars and sk.stars > 0) and sk.stars * 2 or origSky.StarCount
+        sky.SunAngularSize = Settings.skyStyle == "Golden" and 32 or origSky.SunAngularSize
+        sky.MoonAngularSize = Settings.skyStyle == "Moonlit" and 24 or origSky.MoonAngularSize
     end)
-    S.shadowLimit = SHADOW_COUNT[Settings.shadows] or 48
+    S.shadowLimit = SHADOW_COUNT[Settings.shadows] or 250
     S.dofOn = Settings.dof ~= "Off"
     Lighting.GlobalShadows = Settings.shadows ~= "Off"
     if Settings.timeSpeed > 0 then cycleTime = Lighting.ClockTime end
 end
 
 -- ══════════════════════════════════════════════════════════════════════════
---  PER-FRAME APPLY
+--  PER-FRAME APPLY (MAXIMUM LOAD)
 -- ══════════════════════════════════════════════════════════════════════════
 local function setRate(em, r)
     r = math.max(r, 0)
@@ -535,135 +527,123 @@ local function apply(dt)
     local cam = Workspace.CurrentCamera
     local now = os.clock()
 
-    -- time control
     if Settings.lockTime then
-        if math.abs(Lighting.ClockTime - Settings.clockTime) > 0.002 then Lighting.ClockTime = Settings.clockTime end
+        if math.abs(Lighting.ClockTime - Settings.clockTime) > 0.001 then Lighting.ClockTime = Settings.clockTime end
     elseif Settings.timeSpeed > 0 then
         cycleTime = (cycleTime + dt * Settings.timeSpeed / 60) % 24
         Lighting.ClockTime = cycleTime
     end
 
-    -- smooth weather transition
     local tw = WEATHER[Settings.weather] or WEATHER.Clear
-    for k, v in pairs(tw) do wx[k] = damp(wx[k], v, 0.7, dt) end
-    local over = clamp(wx.dark * 1.4, 0, 1)
+    for k, v in pairs(tw) do wx[k] = damp(wx[k], v, 0.8, dt) end
+    local over = clamp(wx.dark * 1.5, 0, 1)
 
-    -- lightning
     if Settings.lightning and wx.storm > 0.5 and now >= nextBolt then
-        S.flash = 1; nextBolt = now + math.random(5, 16)
-        if math.random() < 0.5 then task.delay(0.14, function() S.flash = math.max(S.flash, 0.8) end) end
+        S.flash = 1; nextBolt = now + math.random(3, 10)
+        if math.random() < 0.7 then task.delay(0.12, function() S.flash = math.max(S.flash, 0.95) end) end
     end
-    S.flash = damp(S.flash, 0, 9, dt)
+    S.flash = damp(S.flash, 0, 11, dt)
 
-    -- time-of-day weights
     local sunY = Lighting:GetSunDirection().Y
     local dayF = smoothstep(-0.10, 0.28, sunY)
     local gt = clamp(1 - math.abs(sunY - 0.10) / 0.26, 0, 1)
     local g = gt * gt * (3 - 2 * gt)
     W.g = g * (1 - over); W.d = (1 - g) * dayF * (1 - over); W.n = (1 - g) * (1 - dayF) * (1 - over); W.r = over
 
-    -- smoothing
-    S.indoor = damp(S.indoor, S.indoorT, 3.2, dt); S.sunF = damp(S.sunF, S.sunFT, 5.5, dt)
-    S.sunDisk = damp(S.sunDisk, S.sunDiskT, 7.0, dt); S.focus = damp(S.focus, S.focusT, CFG.FOCUS_SPEED, dt)
-    S.water = damp(S.water, S.waterT, 7.5, dt); S.ssao = damp(S.ssao, S.ssaoT, 6.0, dt)
-    S.neonR = damp(S.neonR, S.neonRT, 3.5, dt); S.neonG = damp(S.neonG, S.neonGT, 3.5, dt); S.neonB = damp(S.neonB, S.neonBT, 3.5, dt)
-    S.mblur = damp(S.mblur, motionBlurTarget(dt), 14, dt); S.speed = damp(S.speed, S.speedT or 0, 4, dt)
+    S.indoor = damp(S.indoor, S.indoorT, 4.0, dt); S.sunF = damp(S.sunF, S.sunFT, 6.5, dt)
+    S.sunDisk = damp(S.sunDisk, S.sunDiskT, 8.0, dt); S.focus = damp(S.focus, S.focusT, CFG.FOCUS_SPEED, dt)
+    S.water = damp(S.water, S.waterT, 8.5, dt); S.ssao = damp(S.ssao, S.ssaoT, 7.0, dt)
+    S.neonR = damp(S.neonR, S.neonRT, 4.5, dt); S.neonG = damp(S.neonG, S.neonGT, 4.5, dt); S.neonB = damp(S.neonB, S.neonBT, 4.5, dt)
+    S.mblur = damp(S.mblur, motionBlurTarget(dt), 16, dt); S.speed = damp(S.speed, S.speedT or 0, 5, dt)
 
     local indoor, water, flash = S.indoor, S.water, S.flash
-    local cloudCut = 1 - over * 0.85
+    local cloudCut = 1 - over * 0.75
     local sunF = S.sunF * (1 - indoor) * (1 - water) * cloudCut
     local sunDisk = S.sunDisk * (1 - indoor) * (1 - water) * cloudCut
     local neonMag, nightAmt = math.max(S.neonR, S.neonG, S.neonB), W.n
 
-    -- follow camera with FX volumes
     if cam then
         local cp = cam.CFrame.Position
-        rainPart.CFrame = CFrame.new(cp + V3(0, 32, 0)); snowPart.CFrame = CFrame.new(cp + V3(0, 26, 0)); dustPart.CFrame = CFrame.new(cp)
+        rainPart.CFrame = CFrame.new(cp + V3(0, 45, 0)); snowPart.CFrame = CFrame.new(cp + V3(0, 35, 0)); dustPart.CFrame = CFrame.new(cp)
     end
     local outdoor = (1 - indoor) * (1 - water)
-    setRate(rainEm, 650 * wx.rain * outdoor)
-    setRate(snowEm, 330 * wx.snow * outdoor)
-    snowEm.Acceleration = V3(math.sin(now * 0.7) * 4, 0, math.cos(now * 0.5) * 3)
-    setRate(dustEm, (Settings.dust and state.enabled) and (10 * (1 - wx.rain) * (1 - wx.snow) * (0.4 + sunF)) or 0)
+    setRate(rainEm, 1200 * wx.rain * outdoor)
+    setRate(snowEm, 700 * wx.snow * outdoor)
+    snowEm.Acceleration = V3(math.sin(now * 0.7) * 8, 0, math.cos(now * 0.5) * 6)
+    setRate(dustEm, (Settings.dust and state.enabled) and (25 * (1 - wx.rain) * (1 - wx.snow) * (0.5 + sunF)) or 0)
 
-    -- lighting
     local sk = SKY[Settings.skyStyle] or SKY.Default
-    local ska = sk.amt * (1 - over * 0.5)
+    local ska = sk.amt * (1 - over * 0.3)
     local ambientFinal = bc(P.Ambient)
-    if neonMag > 0.001 then ambientFinal = lerpC3(ambientFinal, Color3.new(S.neonR, S.neonG, S.neonB), neonMag * (0.35 + nightAmt * 0.35)) end
-    if flash > 0.01 then ambientFinal = lerpC3(ambientFinal, C3(200, 210, 255), flash * 0.5) end
-    local darkBase = lerpC3(ambientFinal, C3(0, 0, 0), S.ssao)
-    local breath = math.sin(now * 1.2) * 0.02 * sunDisk
-    local gr = GRADES[Settings.grade] or GRADES.Natural
+    if neonMag > 0.001 then ambientFinal = lerpC3(ambientFinal, Color3.new(S.neonR, S.neonG, S.neonB), neonMag * (0.50 + nightAmt * 0.40)) end
+    if flash > 0.01 then ambientFinal = lerpC3(ambientFinal, C3(220, 230, 255), flash * 0.7) end
+    local darkBase = lerpC3(ambientFinal, C3(0, 0, 0), S.ssao * 1.3)
+    local breath = math.sin(now * 1.5) * 0.03 * sunDisk
+    local gr = GRADES[Settings.grade] or GRADES.Cinematic
 
-    setN(Lighting, "Brightness", bn(P.Brightness) * (1 - indoor * 0.15) + flash * 1.5)
-    setN(Lighting, "ExposureCompensation", bn(P.Exposure) + indoor * CFG.INDOOR_EXPOSURE - sunF * 0.32 + breath + Settings.exposure + flash * 0.6)
+    setN(Lighting, "Brightness", bn(P.Brightness) * (1 - indoor * 0.10) + flash * 2.0)
+    setN(Lighting, "ExposureCompensation", bn(P.Exposure) + indoor * CFG.INDOOR_EXPOSURE - sunF * 0.35 + breath + Settings.exposure + flash * 0.8)
     setC(Lighting, "Ambient", darkBase); setC(Lighting, "OutdoorAmbient", bc(P.Outdoor))
     local top = bc(P.ShiftTop); if sk.top then top = lerpC3(top, sk.top, ska) end
     setC(Lighting, "ColorShift_Top", top); setC(Lighting, "ColorShift_Bottom", bc(P.ShiftBottom))
-    local refl = REFLECT_MULT[Settings.reflections] or 1
-    local spec = clamp(refl + wx.rain * 0.5 + wx.snow * 0.2, 0, 1)
-    setN(Lighting, "EnvironmentSpecularScale", spec); setN(Lighting, "EnvironmentDiffuseScale", refl)
+    
+    local refl = (REFLECT_MULT[Settings.reflections] or 1) * 1.8
+    local spec = clamp(refl + wx.rain * 0.8 + wx.snow * 0.4, 0, 3)
+    setN(Lighting, "EnvironmentSpecularScale", spec); setN(Lighting, "EnvironmentDiffuseScale", refl * 1.2)
 
-    -- atmosphere
-    local waterCol = C3(38, 108, 140)
-    local glarePulse = 1 + math.sin(now * 0.6) * 0.05 * sunDisk
+    local waterCol = C3(20, 90, 130)
+    local glarePulse = 1 + math.sin(now * 0.7) * 0.08 * sunDisk
     local fogMult = Settings.fog == "Off" and 0 or qual("fog")
     local ac, ad = bc(P.AtmoColor), bc(P.AtmoDecay)
     if sk.atmo then ac = lerpC3(ac, sk.atmo, ska); ad = lerpC3(ad, sk.decay, ska) end
-    setN(atmo, "Density", lerp(clamp(bn(P.AtmoDensity) * fogMult + wx.fog * 0.30, 0, 0.9), 0.74, water))
+    setN(atmo, "Density", lerp(clamp(bn(P.AtmoDensity) * fogMult + wx.fog * 0.40, 0, 0.98), 0.82, water))
     setN(atmo, "Offset", bn(P.AtmoOffset))
-    setC(atmo, "Color", lerpC3(ac, waterCol, water)); setC(atmo, "Decay", lerpC3(ad, C3(18, 60, 82), water))
+    setC(atmo, "Color", lerpC3(ac, waterCol, water)); setC(atmo, "Decay", lerpC3(ad, C3(10, 40, 60), water))
     setN(atmo, "Glare", clamp((bn(P.AtmoGlare) + sunF * CFG.SUN_GLARE_EXTRA) * glarePulse, 0, 1))
-    setN(atmo, "Haze", lerp(bn(P.AtmoHaze) * fogMult + wx.fog * 4, 10, water))
+    setN(atmo, "Haze", lerp(bn(P.AtmoHaze) * fogMult + wx.fog * 5, 12, water))
 
-    local fogEnd = math.min(bn(P.FogDist), FOG_END[Settings.fog] or 800) * (1 - wx.fog * 0.55 - wx.rain * 0.15)
-    fogEnd = lerp(fogEnd, 120, water)
+    local fogEnd = math.min(bn(P.FogDist), FOG_END[Settings.fog] or 600) * (1 - wx.fog * 0.60 - wx.rain * 0.20)
+    fogEnd = lerp(fogEnd, 90, water)
     local fc = bc(P.FogColor); if sk.fog then fc = lerpC3(fc, sk.fog, ska) end
-    setN(Lighting, "FogEnd", fogEnd); setN(Lighting, "FogStart", fogEnd * 0.30)
-    setC(Lighting, "FogColor", lerpC3(fc, waterCol, water * 0.7))
+    setN(Lighting, "FogEnd", fogEnd); setN(Lighting, "FogStart", fogEnd * 0.20)
+    setC(Lighting, "FogColor", lerpC3(fc, waterCol, water * 0.8))
 
-    -- color grade
-    local clar = qual("clarity")
-    local sat = bn(P.Sat) * qual("colorgrade") + gr.sat + water * 0.14 + neonMag * (0.08 + nightAmt * 0.06) - sunDisk * 0.05 + clar * 0.03
-    local contrast = bn(P.Contrast) * qual("contrast") + gr.con + S.ssao * 0.05 + sunDisk * 0.03 + clar * 0.05
-    local tint = lerpC3(bc(P.Tint), C3(118, 178, 215), water)
+    local clar = qual("clarity") * 1.5
+    local sat = bn(P.Sat) * qual("colorgrade") + gr.sat + water * 0.18 + neonMag * (0.10 + nightAmt * 0.08) - sunDisk * 0.06 + clar * 0.05
+    local contrast = bn(P.Contrast) * qual("contrast") + gr.con + S.ssao * 0.08 + sunDisk * 0.05 + clar * 0.08
+    local tint = lerpC3(bc(P.Tint), C3(100, 165, 210), water)
     tint = lerpC3(tint, gr.tint, gr.amt)
     if neonMag > 0.001 then
-        tint = lerpC3(tint, Color3.new(lerp(1, S.neonR, neonMag * 0.5), lerp(1, S.neonG, neonMag * 0.5), lerp(1, S.neonB, neonMag * 0.5)), neonMag * 0.25)
+        tint = lerpC3(tint, Color3.new(lerp(1, S.neonR, neonMag * 0.6), lerp(1, S.neonG, neonMag * 0.6), lerp(1, S.neonB, neonMag * 0.6)), neonMag * 0.35)
     end
-    if sunDisk > 0.01 then tint = lerpC3(tint, C3(255, 235, 205), sunDisk * 0.10) end
-    if Settings.warmth > 0.01 then tint = lerpC3(tint, C3(255, 208, 160), Settings.warmth * 0.38)
-    elseif Settings.warmth < -0.01 then tint = lerpC3(tint, C3(160, 196, 255), -Settings.warmth * 0.38) end
-    setN(cc, "Saturation", clamp(sat, -1, 1)); setN(cc, "Contrast", clamp(contrast, -1, 1))
-    setN(cc, "Brightness", bn(P.Brightness2) + gr.bri + sunDisk * 0.02); setC(cc, "TintColor", tint)
+    if sunDisk > 0.01 then tint = lerpC3(tint, C3(255, 225, 190), sunDisk * 0.15) end
+    if Settings.warmth > 0.01 then tint = lerpC3(tint, C3(255, 195, 140), Settings.warmth * 0.45)
+    elseif Settings.warmth < -0.01 then tint = lerpC3(tint, C3(140, 185, 255), -Settings.warmth * 0.45) end
+    setN(cc, "Saturation", clamp(sat, -1, 1.5)); setN(cc, "Contrast", clamp(contrast, -1, 1.5))
+    setN(cc, "Brightness", bn(P.Brightness2) + gr.bri + sunDisk * 0.03); setC(cc, "TintColor", tint)
 
-    -- bloom / rays
-    local bloomI = (bn(P.BloomI) + sunF * CFG.SUN_BLOOM_EXTRA + sunDisk * CFG.SUN_DISK_BLOOM + sunF * 0.35 + neonMag * nightAmt * 0.35 + flash * 1.2) * qual("bloom")
-    setN(bloom, "Intensity", clamp(bloomI, 0, 3.0)); setN(bloom, "Threshold", bn(P.BloomT) - sunF * 0.14 - sunDisk * 0.08)
-    setN(bloom, "Size", lerp(44, 78, sunF) + sunDisk * 24)
-    setN(sunRays, "Intensity", clamp((bn(P.RaysI) + sunF * CFG.SUN_RAYS_EXTRA + sunDisk * CFG.SUN_DISK_RAYS) * (1 - indoor * 0.85) * (1 - water) * qual("sunrays"), 0, 1.2))
+    local bloomI = (bn(P.BloomI) + sunF * CFG.SUN_BLOOM_EXTRA + sunDisk * CFG.SUN_DISK_BLOOM + sunF * 0.50 + neonMag * nightAmt * 0.50 + flash * 1.8) * qual("bloom")
+    setN(bloom, "Intensity", clamp(bloomI, 0, 5.0)); setN(bloom, "Threshold", bn(P.BloomT) - sunF * 0.18 - sunDisk * 0.10)
+    setN(bloom, "Size", lerp(56, 96, sunF) + sunDisk * 32)
+    setN(sunRays, "Intensity", clamp((bn(P.RaysI) + sunF * CFG.SUN_RAYS_EXTRA + sunDisk * CFG.SUN_DISK_RAYS) * (1 - indoor * 0.75) * (1 - water) * qual("sunrays"), 0, 1.8))
 
-    -- depth of field
     if dof.Enabled ~= S.dofOn then dof.Enabled = S.dofOn end
     if S.dofOn then
-        local dm = clamp(qual("dof"), 0, 1.35)
-        setN(dof, "FocusDistance", S.focus); setN(dof, "InFocusRadius", clamp(S.focus * 0.42, 10, 160) * (1 - sunDisk * 0.35))
-        setN(dof, "FarIntensity", clamp(0.42 * dm * (1 - water * 0.55) + sunDisk * 0.10, 0, 1))
-        setN(dof, "NearIntensity", clamp(0.10 * dm + sunDisk * 0.05, 0, 1))
+        local dm = clamp(qual("dof"), 0, 2.0)
+        setN(dof, "FocusDistance", S.focus); setN(dof, "InFocusRadius", clamp(S.focus * 0.35, 8, 140) * (1 - sunDisk * 0.40))
+        setN(dof, "FarIntensity", clamp(0.60 * dm * (1 - water * 0.45) + sunDisk * 0.15, 0, 1))
+        setN(dof, "NearIntensity", clamp(0.18 * dm + sunDisk * 0.08, 0, 1))
     end
-    setN(blur, "Size", math.max(water * 14, S.mblur))
+    setN(blur, "Size", math.max(water * 18, S.mblur))
 
-    -- clouds
     if clouds and clouds.Parent and clouds.Enabled then
-        local cm = math.min(QM[Settings.clouds] or 1, 1.35)
-        setN(clouds, "Cover", clamp(0.45 * cm + wx.cover * 0.5, 0, 1)); setN(clouds, "Density", clamp(0.60 * cm + wx.cover * 0.35, 0, 1))
+        local cm = math.min((QM[Settings.clouds] or 1) * 1.4, 2.0)
+        setN(clouds, "Cover", clamp(0.55 * cm + wx.cover * 0.55, 0, 1)); setN(clouds, "Density", clamp(0.75 * cm + wx.cover * 0.40, 0, 1))
         local cc2 = bc(P.CloudColor); if sk.cloud then cc2 = lerpC3(cc2, sk.cloud, ska) end
         setC(clouds, "Color", cc2)
     end
-    setVignette(qual("vignette") * 0.30 * (0.75 + indoor * 0.35 + nightAmt * 0.20 + over * 0.15))
+    setVignette(qual("vignette") * 0.40 * (0.80 + indoor * 0.40 + nightAmt * 0.25 + over * 0.20))
 
-    -- FOV
     if cam and (Settings.customFov or Settings.dynFov) then
         local base = Settings.customFov and Settings.fov or origFov
         local want = base + (Settings.dynFov and clamp(S.speed - 16, 0, 40) * 0.18 or 0)
@@ -686,10 +666,10 @@ end
 local function baseSetup()
     forceFuture()
     Lighting.GlobalShadows = Settings.shadows ~= "Off"; Lighting.ShadowSoftness = CFG.SHADOW_SOFTNESS
-    local g = GFX[Settings.gfx] or GFX.High
+    local g = GFX[Settings.gfx] or GFX.Ultra
     pcall(function()
         local r = settings().Rendering
-        if r.QualityLevel ~= g[1] then r.QualityLevel = g[1] end
+        r.QualityLevel = g[1]
         r.MeshPartDetailLevel = g[2]
     end)
     if Terrain then pcall(function() Terrain.Decoration = true end) end
@@ -728,54 +708,50 @@ local function setMaster(on)
 end
 
 -- ══════════════════════════════════════════════════════════════════════════
---  PRESETS
+--  PRESETS (EXTREME MAXED OUT)
 -- ══════════════════════════════════════════════════════════════════════════
 local PRESETS = {
-    { id = "Performance", desc = "Max FPS. Light effects only.", accent = C3(70, 220, 140), values = {
-        gfx = "Low", sunrays = "Low", shadows = "Low", reflections = "Low", bloom = "Low", ssao = "Off", dof = "Off", neon = "Off",
-        motionblur = "Off", vignette = "Off", dust = false, bars = false, grade = "Natural", colorgrade = "Medium", contrast = "Medium",
-        clarity = "Low", fog = "Low", clouds = "Low", water = "Low", skyStyle = "Default", weather = "Clear", lockTime = false, timeSpeed = 0 } },
-    { id = "Afternoon", desc = "Warm sun, clear sky, crisp reflections.", accent = C3(255, 180, 80), values = {
-        gfx = "High", sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra", bloom = "High", ssao = "High", dof = "Medium", neon = "Medium",
-        motionblur = "Low", vignette = "Medium", dust = true, bars = false, grade = "Natural", colorgrade = "Ultra", contrast = "High",
-        clarity = "Medium", fog = "High", clouds = "High", water = "Ultra", skyStyle = "Default", weather = "Clear", clockTime = 14, lockTime = true, timeSpeed = 0 } },
-    { id = "Golden Hour", desc = "Low sun, orange haze, long glow.", accent = C3(255, 140, 70), values = {
-        gfx = "High", sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra", bloom = "Ultra", ssao = "High", dof = "High", neon = "Medium",
-        motionblur = "Low", vignette = "Medium", dust = true, bars = false, grade = "Vintage", colorgrade = "Ultra", contrast = "High",
-        clarity = "Medium", fog = "High", clouds = "High", water = "Ultra", skyStyle = "Golden", weather = "Clear", clockTime = 17.6, lockTime = true, timeSpeed = 0 } },
-    { id = "Night City", desc = "Neon bleed, deep blues, cinematic blur.", accent = C3(140, 160, 255), values = {
-        gfx = "High", sunrays = "Low", shadows = "Ultra", reflections = "High", bloom = "Ultra", ssao = "High", dof = "Ultra", neon = "Ultra",
-        motionblur = "Medium", vignette = "High", dust = true, bars = true, grade = "Teal", colorgrade = "Ultra", contrast = "High",
-        clarity = "High", fog = "High", clouds = "High", water = "High", skyStyle = "Moonlit", weather = "Clear", clockTime = 0, lockTime = true, timeSpeed = 0 } },
-    { id = "Rain", desc = "Gloomy sky, rain, wet reflections, fog.", accent = C3(100, 150, 200), values = {
-        gfx = "High", sunrays = "Off", shadows = "High", reflections = "Ultra", bloom = "Medium", ssao = "Ultra", dof = "Medium", neon = "High",
-        motionblur = "Low", vignette = "High", dust = false, bars = false, grade = "Cold", colorgrade = "Medium", contrast = "High",
-        clarity = "High", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Default", weather = "Rain", clockTime = 15, lockTime = true, timeSpeed = 0 } },
-    { id = "Storm", desc = "Heavy rain with random lightning flashes.", accent = C3(150, 120, 255), values = {
-        gfx = "High", sunrays = "Off", shadows = "High", reflections = "Ultra", bloom = "High", ssao = "Ultra", dof = "Medium", neon = "High",
-        motionblur = "Medium", vignette = "High", dust = false, bars = true, grade = "Noir", colorgrade = "Medium", contrast = "Ultra",
-        clarity = "High", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Default", weather = "Storm", lightning = true, clockTime = 16, lockTime = true, timeSpeed = 0 } },
-    { id = "Snowfall", desc = "Soft snow, cold tones, quiet mood.", accent = C3(200, 230, 255), values = {
-        gfx = "High", sunrays = "Low", shadows = "High", reflections = "High", bloom = "High", ssao = "High", dof = "Medium", neon = "Medium",
-        motionblur = "Low", vignette = "Medium", dust = false, bars = false, grade = "Cold", colorgrade = "Medium", contrast = "Medium",
-        clarity = "Medium", fog = "High", clouds = "Ultra", water = "High", skyStyle = "Default", weather = "Snow", clockTime = 13, lockTime = true, timeSpeed = 0 } },
-    { id = "Cinematic", desc = "Letterbox, teal/orange feel, shallow focus.", accent = C3(255, 200, 120), values = {
-        gfx = "High", sunrays = "High", shadows = "Ultra", reflections = "Ultra", bloom = "High", ssao = "High", dof = "Ultra", neon = "High",
-        motionblur = "Medium", vignette = "High", dust = true, bars = true, grade = "Cinematic", colorgrade = "High", contrast = "Ultra",
-        clarity = "High", fog = "High", clouds = "High", water = "Ultra", skyStyle = "Default", weather = "Clear", lockTime = false, timeSpeed = 0 } },
-    { id = "Ultra", desc = "Everything maxed. Best on strong devices.", accent = C3(255, 120, 200), values = {
+    { id = "Max Extreme", desc = "Absolute maximum fidelity. Max processor load.", accent = C3(255, 60, 120), values = {
+        gfx = "Ultra", sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra", bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
+        motionblur = "Medium", vignette = "High", dust = true, bars = false, grade = "Cinematic", colorgrade = "Ultra", contrast = "Ultra",
+        clarity = "Ultra", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Moonlit", weather = "Clear", lockTime = false, timeSpeed = 0 } },
+    { id = "Hyper Afternoon", desc = "Blinding sunlight, heavy bloom and rays.", accent = C3(255, 170, 50), values = {
         gfx = "Ultra", sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra", bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
         motionblur = "Medium", vignette = "Medium", dust = true, bars = false, grade = "Vivid", colorgrade = "Ultra", contrast = "Ultra",
+        clarity = "Ultra", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Default", weather = "Clear", clockTime = 14, lockTime = true, timeSpeed = 0 } },
+    { id = "Golden Sunset", desc = "Deep orange glow, hyper reflections.", accent = C3(255, 110, 40), values = {
+        gfx = "Ultra", sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra", bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
+        motionblur = "Medium", vignette = "High", dust = true, bars = false, grade = "Vintage", colorgrade = "Ultra", contrast = "Ultra",
+        clarity = "Ultra", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Golden", weather = "Clear", clockTime = 17.6, lockTime = true, timeSpeed = 0 } },
+    { id = "Cyber Night", desc = "Intense neon bleed, heavy contrast and noir.", accent = C3(90, 140, 255), values = {
+        gfx = "Ultra", sunrays = "High", shadows = "Ultra", reflections = "Ultra", bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
+        motionblur = "Medium", vignette = "High", dust = true, bars = true, grade = "Teal", colorgrade = "Ultra", contrast = "Ultra",
+        clarity = "Ultra", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Neon", weather = "Clear", clockTime = 0, lockTime = true, timeSpeed = 0 } },
+    { id = "Deluge Rain", desc = "Heavy torrential rain, puddles and dense fog.", accent = C3(70, 130, 200), values = {
+        gfx = "Ultra", sunrays = "Off", shadows = "Ultra", reflections = "Ultra", bloom = "High", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
+        motionblur = "Medium", vignette = "High", dust = false, bars = false, grade = "Cold", colorgrade = "Ultra", contrast = "Ultra",
+        clarity = "Ultra", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Default", weather = "Rain", clockTime = 15, lockTime = true, timeSpeed = 0 } },
+    { id = "Apocalypse Storm", desc = "Violent thunderstorm, lightning and total darkness.", accent = C3(130, 90, 255), values = {
+        gfx = "Ultra", sunrays = "Off", shadows = "Ultra", reflections = "Ultra", bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
+        motionblur = "Medium", vignette = "High", dust = false, bars = true, grade = "Noir", colorgrade = "Ultra", contrast = "Ultra",
+        clarity = "Ultra", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Default", weather = "Storm", lightning = true, clockTime = 16, lockTime = true, timeSpeed = 0 } },
+    { id = "Deep Blizzard", desc = "Extreme snowstorm, blinding fog and ice.", accent = C3(180, 220, 255), values = {
+        gfx = "Ultra", sunrays = "Low", shadows = "Ultra", reflections = "Ultra", bloom = "High", ssao = "Ultra", dof = "Ultra", neon = "Medium",
+        motionblur = "Low", vignette = "High", dust = false, bars = false, grade = "Cold", colorgrade = "Ultra", contrast = "High",
+        clarity = "High", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Default", weather = "Snow", clockTime = 13, lockTime = true, timeSpeed = 0 } },
+    { id = "Cinematic Master", desc = "Letterbox, hyper-graded film look.", accent = C3(255, 190, 100), values = {
+        gfx = "Ultra", sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra", bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
+        motionblur = "Medium", vignette = "High", dust = true, bars = true, grade = "Cinematic", colorgrade = "Ultra", contrast = "Ultra",
         clarity = "Ultra", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Default", weather = "Clear", lockTime = false, timeSpeed = 0 } },
 }
 
 -- ══════════════════════════════════════════════════════════════════════════
---  UI
+--  UI (TRANSPARENT FRAME - NO DARK FILTER)
 -- ══════════════════════════════════════════════════════════════════════════
 local COL = {
-    bg = C3(25, 30, 42), panel = C3(45, 54, 74), card = C3(60, 72, 96), hover = C3(80, 95, 125), seg_off = C3(70, 85, 112),
-    accent = C3(0, 220, 255), text = C3(255, 255, 255), dim = C3(230, 240, 255), border = C3(100, 125, 165),
-    white = C3(255, 255, 255), good = C3(72, 222, 140), bad = C3(255, 95, 95),
+    bg = C3(20, 24, 34), panel = C3(35, 42, 58), card = C3(50, 60, 82), hover = C3(70, 85, 115), seg_off = C3(55, 70, 95),
+    accent = C3(0, 240, 255), text = C3(255, 255, 255), dim = C3(220, 235, 255), border = C3(90, 120, 160),
+    white = C3(255, 255, 255), good = C3(60, 230, 130), bad = C3(255, 75, 75),
 }
 local F_BLACK, F_BOLD, F_MED, F_REG = Enum.Font.GothamBlack, Enum.Font.GothamBold, Enum.Font.GothamMedium, Enum.Font.Gotham
 local QUALITY_OPTIONS = { "Off", "Low", "Medium", "High", "Ultra" }
@@ -855,7 +831,6 @@ local rowSetters = {}
 local refreshPresets = function() end
 local toast = function() end
 local uiScaleNow = 1
-local scheduleRefresh
 
 local function addRipple(btn, guiRef)
     btn.ClipsDescendants = true
@@ -971,16 +946,14 @@ local function buildUI()
     local gui = track(new("ScreenGui", { Name = "RTXV9_Settings", ResetOnSpawn = false, IgnoreGuiInset = true, DisplayOrder = 9999, ZIndexBehavior = Enum.ZIndexBehavior.Sibling }))
     gui.Parent = guiParent()
 
-    -- floating badge
     local badge = new("TextButton", { Name = "Badge", Size = UDim2.fromOffset(54, 54), Position = UDim2.new(1, -72, 0, 70), BackgroundColor3 = COL.card, Text = "", AutoButtonColor = false, BorderSizePixel = 0, ZIndex = 101 }, gui)
     corner(badge, 16); local badgeStroke = stroke(badge, COL.accent, 2, 0.3)
-    local badgeText = label(badge, { Size = UDim2.new(1, 0, 1, 0), Text = "RTX", Font = F_BLACK, TextSize = 17, TextColor3 = COL.accent, ZIndex = 102 })
+    label(badge, { Size = UDim2.new(1, 0, 1, 0), Text = "RTX", Font = F_BLACK, TextSize = 17, TextColor3 = COL.accent, ZIndex = 102 })
 
-    -- movable wrapper (no UIScale on it) -> panel (scaled)
     local mover = new("Frame", { Name = "Mover", Size = UDim2.fromOffset(0, 0), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0.5, 0, 0.5, 0), BackgroundTransparency = 1, Visible = false }, gui)
-    local panel = new("CanvasGroup", { Name = "Panel", Size = UDim2.fromOffset(680, 440), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = COL.panel, BorderSizePixel = 0, GroupTransparency = 1 }, mover)
+    local panel = new("Frame", { Name = "Panel", Size = UDim2.fromOffset(680, 440), AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.new(0, 0, 0, 0), BackgroundColor3 = COL.panel, BorderSizePixel = 0, BackgroundTransparency = 1 }, mover)
     corner(panel, 18); stroke(panel, COL.accent, 1.5, 0.2)
-    new("UIGradient", { Color = ColorSequence.new(C3(80, 95, 125), C3(35, 42, 58)), Rotation = 135 }, panel)
+    new("UIGradient", { Color = ColorSequence.new(C3(90, 110, 140), C3(30, 38, 52)), Rotation = 135 }, panel)
     local fit = new("UIScale", { Scale = 1 }, panel)
     local fitTarget = 1
     local function refit()
@@ -994,13 +967,12 @@ local function buildUI()
     local function hookCamera() if camConn then camConn:Disconnect() end; local cam = Workspace.CurrentCamera; if cam then camConn = cam:GetPropertyChangedSignal("ViewportSize"):Connect(refit); conns[#conns + 1] = camConn end end
     hookCamera(); connect(Workspace:GetPropertyChangedSignal("CurrentCamera"), function() refit(); hookCamera() end)
 
-    -- header
     local header = new("Frame", { Size = UDim2.new(1, 0, 0, 56), BackgroundTransparency = 1 }, panel)
     local logo = new("Frame", { Size = UDim2.fromOffset(34, 34), Position = UDim2.new(0, 16, 0.5, -17), BackgroundColor3 = COL.accent, BorderSizePixel = 0 }, header)
-    corner(logo, 10); new("UIGradient", { Color = ColorSequence.new(C3(0, 230, 255), C3(110, 120, 255)), Rotation = 45 }, logo)
+    corner(logo, 10); new("UIGradient", { Color = ColorSequence.new(C3(0, 240, 255), C3(100, 110, 255)), Rotation = 45 }, logo)
     label(logo, { Size = UDim2.new(1, 0, 1, 0), Text = "R", Font = F_BLACK, TextSize = 19, TextColor3 = COL.bg })
-    label(header, { Position = UDim2.new(0, 58, 0, 10), Size = UDim2.new(0, 160, 0, 20), Font = F_BLACK, TextSize = 16, TextXAlignment = Enum.TextXAlignment.Left, Text = "RTX ULTRA" })
-    label(header, { Position = UDim2.new(0, 58, 0, 30), Size = UDim2.new(0, 160, 0, 16), TextSize = 11, TextColor3 = COL.dim, TextXAlignment = Enum.TextXAlignment.Left, Text = "v" .. VERSION .. " · Cinematic Engine" })
+    label(header, { Position = UDim2.new(0, 58, 0, 10), Size = UDim2.new(0, 180, 0, 20), Font = F_BLACK, TextSize = 16, TextXAlignment = Enum.TextXAlignment.Left, Text = "RTX EXTREME" })
+    label(header, { Position = UDim2.new(0, 58, 0, 30), Size = UDim2.new(0, 180, 0, 16), TextSize = 11, TextColor3 = COL.dim, TextXAlignment = Enum.TextXAlignment.Left, Text = "v" .. VERSION .. " · Max Fidelity" })
 
     local closeBtn = new("TextButton", { Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -48, 0.5, -17), BackgroundColor3 = COL.card, Text = "×", Font = F_BOLD, TextSize = 22, TextColor3 = COL.text, AutoButtonColor = false, BorderSizePixel = 0 }, header)
     corner(closeBtn, 10)
@@ -1014,7 +986,6 @@ local function buildUI()
     local telemLbl = label(telem, { Size = UDim2.new(1, 0, 1, 0), Font = F_BOLD, TextSize = 10, Text = "-- FPS · -- ms · -- MB", TextColor3 = COL.dim })
     new("Frame", { Size = UDim2.new(1, -32, 0, 1), Position = UDim2.new(0, 16, 0, 56), BackgroundColor3 = COL.border, BackgroundTransparency = 0.5, BorderSizePixel = 0 }, panel)
 
-    -- sidebar
     local sidebar = new("Frame", { Size = UDim2.new(0, 128, 1, -76), Position = UDim2.new(0, 12, 0, 66), BackgroundTransparency = 1 }, panel)
     local TAB_H, TAB_GAP = 34, 4
     local tabBg = new("Frame", { Size = UDim2.new(1, 0, 0, TAB_H), BackgroundColor3 = COL.hover, BorderSizePixel = 0 }, sidebar)
@@ -1030,7 +1001,6 @@ local function buildUI()
     corner(resetBtn, 9); stroke(resetBtn, COL.border, 1, 0.4); addRipple(resetBtn, gui)
     resetBtn.Activated:Connect(resetAll)
 
-    -- pages
     local fade = new("Frame", { Size = UDim2.new(1, -164, 1, -76), Position = UDim2.new(0, 152, 0, 66), BackgroundTransparency = 1 }, panel)
     local holder = new("Frame", { Size = UDim2.new(1, 0, 1, 0), BackgroundTransparency = 1 }, fade)
     local pages, pageRows = {}, {}
@@ -1047,7 +1017,7 @@ local function buildUI()
         local typ = def.type
         local h = (typ == "tier" or typ == "slider") and 72 or 56
         if typ == "info" then h = def.h or 70 end
-        local row = new("CanvasGroup", { LayoutOrder = order, Size = UDim2.new(1, 0, 0, h), BackgroundColor3 = COL.card, BorderSizePixel = 0 }, page)
+        local row = new("Frame", { LayoutOrder = order, Size = UDim2.new(1, 0, 0, h), BackgroundColor3 = COL.card, BorderSizePixel = 0, BackgroundTransparency = 0 }, page)
         corner(row, 10); stroke(row, COL.border, 1, 0.3)
         label(row, { Position = UDim2.new(0, 14, 0, 8), Size = UDim2.new(1, -120, 0, 18), Font = F_BOLD, TextSize = 14, TextXAlignment = Enum.TextXAlignment.Left, Text = def.label, TextColor3 = COL.text })
         label(row, { Position = UDim2.new(0, 14, 0, 26), Size = UDim2.new(1, -(typ == "toggle" and 90 or 28), 0, typ == "info" and h - 30 or 14), TextSize = 11, TextColor3 = COL.dim,
@@ -1086,12 +1056,11 @@ local function buildUI()
 
     local function playRows(id)
         for i, r in ipairs(pageRows[id] or {}) do
-            r.GroupTransparency = 1
-            task.delay((i - 1) * 0.035, function() if running and r.Parent then tween(r, { GroupTransparency = 0 }, 0.3) end end)
+            r.BackgroundTransparency = 1
+            task.delay((i - 1) * 0.035, function() if running and r.Parent then tween(r, { BackgroundTransparency = 0 }, 0.3) end end)
         end
     end
 
-    -- presets page
     local presetPage = newPage("presets", true)
     local presetCards = {}
     for i, p in ipairs(PRESETS) do
@@ -1114,7 +1083,6 @@ local function buildUI()
         end
     end
 
-    -- settings pages
     local function stopAll() if env.__RTX_V9 then env.__RTX_V9.Stop() end end
     local SYSTEM = {
         { type = "slots", label = "Profile 1", desc = "Save or load a full setup", slot = 1 },
@@ -1150,7 +1118,6 @@ local function buildUI()
         info.btn.Activated:Connect(function() switchTab(id) end)
     end
 
-    -- toast
     local toastFrame = new("Frame", { Size = UDim2.fromOffset(250, 34), AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 70, 1, -12), BackgroundColor3 = COL.card, BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = 20 }, panel)
     corner(toastFrame, 17); local toastStroke = stroke(toastFrame, COL.accent, 1, 1)
     local toastLbl = label(toastFrame, { Size = UDim2.new(1, 0, 1, 0), Font = F_MED, TextSize = 12, TextTransparency = 1, ZIndex = 21, TextColor3 = COL.text })
@@ -1174,17 +1141,16 @@ local function buildUI()
     end
     addRipple(masterBtn, gui); masterBtn.Activated:Connect(function() setMaster(not state.enabled) end)
 
-    -- open / close
     local function openPanel()
         if uiOpen then return end; uiOpen = true; mover.Visible = true; refit()
-        panel.GroupTransparency = 1; fit.Scale = fitTarget * 0.9; panel.Position = UDim2.new(0, 0, 0, 24)
-        tween(panel, { GroupTransparency = 0, Position = UDim2.new(0, 0, 0, 0) }, 0.35, Enum.EasingStyle.Quint)
+        panel.BackgroundTransparency = 1; fit.Scale = fitTarget * 0.9; panel.Position = UDim2.new(0, 0, 0, 24)
+        tween(panel, { BackgroundTransparency = 0, Position = UDim2.new(0, 0, 0, 0) }, 0.35, Enum.EasingStyle.Quint)
         tween(fit, { Scale = fitTarget }, 0.4, Enum.EasingStyle.Back)
         playRows(currentTab or "presets")
     end
     local function closePanel()
         if not uiOpen then return end; uiOpen = false
-        tween(panel, { GroupTransparency = 1 }, 0.2); tween(fit, { Scale = fitTarget * 0.94 }, 0.2)
+        tween(panel, { BackgroundTransparency = 1 }, 0.2); tween(fit, { Scale = fitTarget * 0.94 }, 0.2)
         task.delay(0.22, function() if not uiOpen and running then mover.Visible = false end end)
     end
     local function togglePanel() if uiOpen then closePanel() else openPanel() end end
@@ -1198,7 +1164,6 @@ local function buildUI()
     end
     closeBtn.Activated:Connect(closePanel)
 
-    -- badge: tap to toggle, drag to move
     badge.InputBegan:Connect(function(input)
         if not isPointer(input) then return end
         local startPos, startU = input.Position, badge.Position; local moved = false
@@ -1212,7 +1177,6 @@ local function buildUI()
         end)
     end)
 
-    -- drag panel by header
     header.InputBegan:Connect(function(input)
         if not isPointer(input) then return end
         local startPos, startU = input.Position, mover.Position
@@ -1222,7 +1186,6 @@ local function buildUI()
         end, nil)
     end)
 
-    -- badge pulse + telemetry
     task.spawn(function()
         while running and gui.Parent do
             local ping = 0; pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
@@ -1260,26 +1223,21 @@ local function step(dt)
     if not state.enabled then return end
     tRay += dt; tWater += dt; tLights += dt; tBase += dt; tGov += dt; tIgnore += dt; tNeon += dt
     if tIgnore >= 1.0 then tIgnore = 0; refreshIgnore() end
-    if tRay >= 0.075 then tRay = 0; local dw = tWater >= 0.25; if dw then tWater = 0 end; sampleWorld(dw) end
+    if tRay >= 0.05 then tRay = 0; local dw = tWater >= 0.20; if dw then tWater = 0 end; sampleWorld(dw) end
     if tLights >= CFG.LIGHT_REFRESH then tLights = 0; updateLights() end
     if tNeon >= CFG.NEON_SCAN_INTERVAL then tNeon = 0; scanNeonBleed() end
     if tBase >= 3.0 then tBase = 0; baseSetup() end
-    if Settings.adaptive and tGov >= 3.0 then
-        tGov = 0; local base = SHADOW_COUNT[Settings.shadows] or 48
-        if S.fps < CFG.FPS_LOW then S.shadowLimit = math.max(math.floor(base * 0.35), S.shadowLimit - 8); S.dofOn = false
-        elseif S.fps > CFG.FPS_HIGH then S.shadowLimit = math.min(base, S.shadowLimit + 6); S.dofOn = Settings.dof ~= "Off" end
-    end
     apply(dt)
 end
 
 local lastErr
 connect(RunService.Heartbeat, function(dt)
     local ok, err = pcall(step, dt)
-    if not ok and err ~= lastErr then lastErr = err; warn("[RTX V9] " .. tostring(err)) end
+    if not ok and err ~= lastErr then lastErr = err; warn("[RTX EXTREME] " .. tostring(err)) end
 end)
 
 local okUI, errUI = pcall(buildUI)
-if not okUI then warn("[RTX V9] UI failed: " .. tostring(errUI)) end
+if not okUI then warn("[RTX EXTREME] UI failed: " .. tostring(errUI)) end
 
 env.__RTX_V9 = {
     Version = VERSION, Settings = Settings, State = S, Config = CFG, SetEnabled = setMaster,
@@ -1292,10 +1250,10 @@ env.__RTX_V9 = {
         pcall(function() if origTechnology ~= Lighting.Technology then Lighting.Technology = origTechnology end end)
         for _, i in ipairs(created) do pcall(function() i:Destroy() end) end
         for _, fn in ipairs(restores) do pcall(fn) end
-        print("[RTX V9] stopped.")
+        print("[RTX EXTREME] stopped.")
     end,
 }
 
 pcall(function()
-    StarterGui:SetCore("SendNotification", { Title = "RTX Nexus V9", Text = IS_TOUCH and "Tap the RTX badge to open." or "RightShift to open.", Duration = 6 })
+    StarterGui:SetCore("SendNotification", { Title = "RTX Extreme V9.1", Text = IS_TOUCH and "Modo extremo activado." or "RightShift to open.", Duration = 6 })
 end)
