@@ -1,8 +1,3 @@
---[[
-    RTX ULTRA V9.1 EXTREME · Maximum Processor Stress & Fidelity Suite (Delta / Mobile)
-]]
-
--- ─── ANTI-DUPLICATE GUARD ──────────────────────────────────────────────────
 local env = (getgenv and getgenv()) or _G
 for _, key in ipairs({ "__RTX_V5", "__RTX_V6", "__RTX_V7", "__RTX_V8", "__RTX_V9" }) do
     local old = env[key]
@@ -10,7 +5,6 @@ for _, key in ipairs({ "__RTX_V5", "__RTX_V6", "__RTX_V7", "__RTX_V8", "__RTX_V9
     env[key] = nil
 end
 
--- ─── SERVICES ──────────────────────────────────────────────────────────────
 local Lighting         = game:GetService("Lighting")
 local RunService       = game:GetService("RunService")
 local Workspace        = game:GetService("Workspace")
@@ -26,10 +20,7 @@ local LP      = Players.LocalPlayer
 local Terrain = Workspace:FindFirstChildOfClass("Terrain")
 local IS_TOUCH = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 
--- ══════════════════════════════════════════════════════════════════════════
---  CONFIG (EXTREME PROFILE)
--- ══════════════════════════════════════════════════════════════════════════
-local VERSION = "9.1-EXTREME"
+local VERSION = "9.1"
 local CFG = {
     SHADOW_SOFTNESS    = 0.02,
     LIGHT_SHADOW_DIST  = 2500,
@@ -52,9 +43,6 @@ local CFG = {
     MASTER_KEY         = Enum.KeyCode.RightControl,
 }
 
--- ══════════════════════════════════════════════════════════════════════════
---  UTILITIES
--- ══════════════════════════════════════════════════════════════════════════
 local C3, V3 = Color3.fromRGB, Vector3.new
 local function clamp(x, a, b) return math.max(a, math.min(b, x)) end
 local function lerp(a, b, t) return a + (b - a) * t end
@@ -84,9 +72,6 @@ local function guiParent()
     return LP:WaitForChild("PlayerGui")
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  SETTINGS, DEFAULTS, EXTREME MULTIPLIERS
--- ══════════════════════════════════════════════════════════════════════════
 local QM           = { Off = 0, Low = 0.60, Medium = 1.20, High = 2.00, Ultra = 3.50 }
 local SHADOW_COUNT = { Off = 0, Low = 50, Medium = 120, High = 250, Ultra = 500 }
 local FOG_END      = { Off = 99999, Low = 3000, Medium = 2000, High = 1200, Ultra = 800 }
@@ -103,10 +88,10 @@ local DEFAULTS = {
     gfx = "Ultra",
     sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra",
     bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
-    motionblur = "Medium", vignette = "High", dust = true, bars = false,
-    grade = "Cinematic", colorgrade = "Ultra", contrast = "Ultra", clarity = "Ultra",
+    motionblur = "Medium", vignette = "Low", dust = true, bars = false,
+    grade = "Cinematic", colorgrade = "Medium", contrast = "Medium", clarity = "Medium",
     exposure = 0.05, warmth = 0.15,
-    fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Moonlit",
+    fog = "Medium", clouds = "Ultra", water = "Ultra", skyStyle = "Moonlit",
     weather = "Clear", lightning = true,
     lockTime = false, clockTime = 14, timeSpeed = 0,
     customFov = false, fov = 70, dynFov = false, adaptive = false,
@@ -143,9 +128,6 @@ local function flushSave()
     pcall(function() writefile(CFG.SAVE_FILE, HttpService:JSONEncode({ current = cur, slots = store.slots })) end)
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  ORIGINAL STATE CAPTURE
--- ══════════════════════════════════════════════════════════════════════════
 local LIGHTING_PROPS = {
     "Brightness", "ExposureCompensation", "Ambient", "OutdoorAmbient", "ColorShift_Top", "ColorShift_Bottom",
     "FogEnd", "FogStart", "FogColor", "GlobalShadows", "ShadowSoftness", "EnvironmentSpecularScale",
@@ -175,9 +157,6 @@ end
 sweepOld(Lighting); sweepOld(Workspace); sweepOld(Terrain)
 pcall(function() sweepOld(guiParent()) end)
 
--- ══════════════════════════════════════════════════════════════════════════
---  EFFECT INSTANCES (MAXIMUM INTENSITY)
--- ══════════════════════════════════════════════════════════════════════════
 local function make(class, name)
     local i = Instance.new(class); i.Name = name; i.Parent = Lighting; track(i); return i
 end
@@ -233,9 +212,6 @@ local dustEm = new("ParticleEmitter", {
 }, dustPart)
 pcall(function() dustEm.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume end)
 
--- ══════════════════════════════════════════════════════════════════════════
---  NEUTRALIZE GAME EFFECTS
--- ══════════════════════════════════════════════════════════════════════════
 local state = { enabled = true }
 local stash, postOrig = {}, {}
 local function neutralize(obj)
@@ -250,9 +226,6 @@ local function restoreGameFx()
 end
 connect(Lighting.ChildAdded, function(o) task.defer(function() if running and o.Parent == Lighting then neutralize(o) end end) end)
 
--- ══════════════════════════════════════════════════════════════════════════
---  EXTREME PALETTES & GRADES
--- ══════════════════════════════════════════════════════════════════════════
 local P = {
     Brightness  = { 4.2, 3.2, 1.4, 2.4 },
     Exposure    = { 0.00, 0.20, 0.50, -0.05 },
@@ -312,9 +285,6 @@ local GRADES = {
     Cold      = { sat = 0.05, con = 0.20, bri = 0.00, tint = C3(175, 205, 255), amt = 0.50 },
 }
 
--- ══════════════════════════════════════════════════════════════════════════
---  RUNTIME STATE
--- ══════════════════════════════════════════════════════════════════════════
 local S = {
     indoor = 0, indoorT = 0, sunF = 0, sunFT = 0, sunDisk = 0, sunDiskT = 0,
     focus = 60, focusT = 60, water = 0, waterT = 0, ssao = 0, ssaoT = 0, mblur = 0,
@@ -327,9 +297,6 @@ local cycleTime = Lighting.ClockTime
 local nextBolt = os.clock() + 6
 local fovActive = false
 
--- ══════════════════════════════════════════════════════════════════════════
---  SCREEN OVERLAY
--- ══════════════════════════════════════════════════════════════════════════
 local function tween(obj, props, time, style, dir)
     local tw = TweenService:Create(obj, TweenInfo.new(time or 0.2, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out), props)
     tw:Play(); return tw
@@ -361,9 +328,6 @@ local function setVignette(i)
     for _, f in ipairs(vignette) do if math.abs(f.BackgroundTransparency - t) > 0.004 then f.BackgroundTransparency = t end end
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  WORLD SAMPLING
--- ══════════════════════════════════════════════════════════════════════════
 local rayMain = RaycastParams.new()
 rayMain.FilterType = Enum.RaycastFilterType.Exclude
 rayMain.IgnoreWater = true
@@ -448,9 +412,6 @@ local function motionBlurTarget(dt)
     prevLook = look; return target
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  DYNAMIC LIGHT SHADOW BUDGET (EXTREME)
--- ══════════════════════════════════════════════════════════════════════════
 local function trackLight(o) if o:IsA("Light") then lights[o] = true; if origShadows[o] == nil then origShadows[o] = o.Shadows end end end
 local function lightPriority(l)
     local base = l:IsA("SpotLight") and 1.2 or (l:IsA("SurfaceLight") and 1.0 or 0.8)
@@ -487,9 +448,6 @@ end)
 connect(Workspace.DescendantAdded, function(o) trackLight(o); trackNeon(o) end)
 connect(Workspace.DescendantRemoving, function(o) lights[o] = nil; neonParts[o] = nil end)
 
--- ══════════════════════════════════════════════════════════════════════════
---  DISCRETE SETTINGS
--- ══════════════════════════════════════════════════════════════════════════
 local function applyDiscrete()
     if not state.enabled then return end
     if Terrain then
@@ -513,9 +471,6 @@ local function applyDiscrete()
     if Settings.timeSpeed > 0 then cycleTime = Lighting.ClockTime end
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  PER-FRAME APPLY (MAXIMUM LOAD)
--- ══════════════════════════════════════════════════════════════════════════
 local function setRate(em, r)
     r = math.max(r, 0)
     if math.abs(em.Rate - r) > 2 then em.Rate = r end
@@ -654,9 +609,6 @@ local function apply(dt)
     end
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  BASE SETUP + MASTER SWITCH
--- ══════════════════════════════════════════════════════════════════════════
 local function forceFuture()
     if Lighting.Technology ~= Enum.Technology.Future then
         pcall(function() Lighting.Technology = Enum.Technology.Future end)
@@ -707,14 +659,11 @@ local function setMaster(on)
     updateBars(); onMasterChanged(on)
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  PRESETS (EXTREME MAXED OUT)
--- ══════════════════════════════════════════════════════════════════════════
 local PRESETS = {
     { id = "Max Extreme", desc = "Absolute maximum fidelity. Max processor load.", accent = C3(255, 60, 120), values = {
-        gfx = "Ultra", sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra", bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
-        motionblur = "Medium", vignette = "High", dust = true, bars = false, grade = "Cinematic", colorgrade = "Ultra", contrast = "Ultra",
-        clarity = "Ultra", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Moonlit", weather = "Clear", lockTime = false, timeSpeed = 0 } },
+        gfx = "Ultra", sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra", bloom = "Low", ssao = "Ultra", dof = "Ultra", neon = "Off",
+        motionblur = "Medium", vignette = "Low", dust = true, bars = false, grade = "Cinematic", colorgrade = "Medium", contrast = "Medium",
+        clarity = "Medium", fog = "Medium", clouds = "Ultra", water = "Ultra", skyStyle = "Moonlit", weather = "Clear", lockTime = false, timeSpeed = 0 } },
     { id = "Hyper Afternoon", desc = "Blinding sunlight, heavy bloom and rays.", accent = C3(255, 170, 50), values = {
         gfx = "Ultra", sunrays = "Ultra", shadows = "Ultra", reflections = "Ultra", bloom = "Ultra", ssao = "Ultra", dof = "Ultra", neon = "Ultra",
         motionblur = "Medium", vignette = "Medium", dust = true, bars = false, grade = "Vivid", colorgrade = "Ultra", contrast = "Ultra",
@@ -745,9 +694,6 @@ local PRESETS = {
         clarity = "Ultra", fog = "Ultra", clouds = "Ultra", water = "Ultra", skyStyle = "Default", weather = "Clear", lockTime = false, timeSpeed = 0 } },
 }
 
--- ══════════════════════════════════════════════════════════════════════════
---  UI (TRANSPARENT FRAME - NO DARK FILTER)
--- ══════════════════════════════════════════════════════════════════════════
 local COL = {
     bg = C3(20, 24, 34), panel = C3(35, 42, 58), card = C3(50, 60, 82), hover = C3(70, 85, 115), seg_off = C3(55, 70, 95),
     accent = C3(0, 240, 255), text = C3(255, 255, 255), dim = C3(220, 235, 255), border = C3(90, 120, 160),
@@ -971,8 +917,8 @@ local function buildUI()
     local logo = new("Frame", { Size = UDim2.fromOffset(34, 34), Position = UDim2.new(0, 16, 0.5, -17), BackgroundColor3 = COL.accent, BorderSizePixel = 0 }, header)
     corner(logo, 10); new("UIGradient", { Color = ColorSequence.new(C3(0, 240, 255), C3(100, 110, 255)), Rotation = 45 }, logo)
     label(logo, { Size = UDim2.new(1, 0, 1, 0), Text = "R", Font = F_BLACK, TextSize = 19, TextColor3 = COL.bg })
-    label(header, { Position = UDim2.new(0, 58, 0, 10), Size = UDim2.new(0, 180, 0, 20), Font = F_BLACK, TextSize = 16, TextXAlignment = Enum.TextXAlignment.Left, Text = "RTX EXTREME" })
-    label(header, { Position = UDim2.new(0, 58, 0, 30), Size = UDim2.new(0, 180, 0, 16), TextSize = 11, TextColor3 = COL.dim, TextXAlignment = Enum.TextXAlignment.Left, Text = "v" .. VERSION .. " · Max Fidelity" })
+    label(header, { Position = UDim2.new(0, 58, 0, 10), Size = UDim2.new(0, 180, 0, 20), Font = F_BLACK, TextSize = 16, TextXAlignment = Enum.TextXAlignment.Left, Text = "RTX ULTRA" })
+    label(header, { Position = UDim2.new(0, 58, 0, 30), Size = UDim2.new(0, 180, 0, 16), TextSize = 11, TextColor3 = COL.dim, TextXAlignment = Enum.TextXAlignment.Left, Text = "v" .. VERSION })
 
     local closeBtn = new("TextButton", { Size = UDim2.fromOffset(34, 34), Position = UDim2.new(1, -48, 0.5, -17), BackgroundColor3 = COL.card, Text = "×", Font = F_BOLD, TextSize = 22, TextColor3 = COL.text, AutoButtonColor = false, BorderSizePixel = 0 }, header)
     corner(closeBtn, 10)
@@ -1207,9 +1153,6 @@ local function buildUI()
     switchTab("presets", true)
 end
 
--- ══════════════════════════════════════════════════════════════════════════
---  MAIN LOOP
--- ══════════════════════════════════════════════════════════════════════════
 local tRay, tWater, tLights, tBase, tGov, tIgnore, tNeon = 0, 0, 0, 0, 0, 0, 0
 baseSetup(); applyDiscrete(); refreshIgnore(); sampleWorld(true)
 S.indoor, S.sunF, S.sunDisk = S.indoorT, S.sunFT, S.sunDiskT; S.focus, S.water = S.focusT, S.waterT
@@ -1233,11 +1176,10 @@ end
 local lastErr
 connect(RunService.Heartbeat, function(dt)
     local ok, err = pcall(step, dt)
-    if not ok and err ~= lastErr then lastErr = err; warn("[RTX EXTREME] " .. tostring(err)) end
+    if not ok and err ~= lastErr then lastErr = err end
 end)
 
 local okUI, errUI = pcall(buildUI)
-if not okUI then warn("[RTX EXTREME] UI failed: " .. tostring(errUI)) end
 
 env.__RTX_V9 = {
     Version = VERSION, Settings = Settings, State = S, Config = CFG, SetEnabled = setMaster,
@@ -1250,7 +1192,6 @@ env.__RTX_V9 = {
         pcall(function() if origTechnology ~= Lighting.Technology then Lighting.Technology = origTechnology end end)
         for _, i in ipairs(created) do pcall(function() i:Destroy() end) end
         for _, fn in ipairs(restores) do pcall(fn) end
-        print("[RTX EXTREME] stopped.")
     end,
 }
 
